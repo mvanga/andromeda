@@ -4,6 +4,27 @@
 #include <cstdio>
 #include <cmath>
 
+Position *SchematicRenderer::getGLPos(int x, int y)
+{
+	GLint viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+	GLfloat winX, winY, winZ;
+	GLdouble posX, posY, posZ;
+
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	glGetIntegerv(GL_VIEWPORT, viewport);
+
+	winX = (float)x;
+	winY = m_height - (float)y;
+	glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+
+	gluUnProject(winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
+
+	return new Position(posX, posY, posZ);
+}
+
 SchematicRenderer::SchematicRenderer(QWidget *parent, Schematic *p_sch) :
 	QGLWidget(parent), m_sch(p_sch) {
 	setMouseTracking(true);
@@ -64,15 +85,46 @@ bool SchematicRenderer::showGrid()
 void SchematicRenderer::drawGrid()
 {
 	int i;
+
+	if (!showGrid())
+		return;
+
 	glColor3f(0.8, 0.8, 0.8);
 	glBegin(GL_LINES);
-	/* Horizontal lines. */
-	for (i=-m_height/2; i<=m_height/2; i++) {
-		glVertex2f(-m_width/2, i*m_gridWidth);
+	/* Horizontal */
+	for (i=-m_height/2; i <= m_height/2; i++) {
+		glVertex2f(0, i*m_gridWidth);
 		glVertex2f(m_width/2, i*m_gridWidth);
 	}
-	/* Vertical lines. */
+	for (i=-m_height/2; i <= m_height/2; i++) {
+		glVertex2f(-m_width/2, i*m_gridWidth);
+		glVertex2f(0, i*m_gridWidth);
+	}
+
+	/* Vertical */
 	for (i=-m_width/2; i<=m_width/2; i++) {
+		glVertex2f(i*m_gridWidth, 0);
+		glVertex2f(i*m_gridWidth, m_height/2);
+	}
+	for (i=-m_width/2; i<=m_width/2; i++) {
+		glVertex2f(i*m_gridWidth, 0);
+		glVertex2f(i*m_gridWidth, -m_height/2);
+	}
+	glEnd();
+
+	glColor3f(0.7, 0.7, 0.7);
+	glBegin(GL_LINES);
+	/* Horizontal lines. */
+	for (i=-m_height/2; i<=m_height/2; i+=10) {
+		glVertex2f(0, i*m_gridWidth);
+		glVertex2f(m_width/2, i*m_gridWidth);
+	}
+	for (i=-m_height/2; i<=m_height/2; i+=10) {
+		glVertex2f(-m_width/2, i*m_gridWidth);
+		glVertex2f(0, i*m_gridWidth);
+	}
+	/* Vertical lines. */
+	for (i=-m_width/2; i<=m_width/2; i+=10) {
 		glVertex2f(i*m_gridWidth, -m_height/2);
 		glVertex2f(i*m_gridWidth, m_height/2);
 	}
@@ -81,16 +133,12 @@ void SchematicRenderer::drawGrid()
 
 void SchematicRenderer::paintGL()
 {
-	double zN = sqrt(m_zoom);
-
 	glClear(GL_COLOR_BUFFER_BIT);
-
 	glLoadIdentity();
-	glTranslatef(m_panx + m_panex - m_pansx, m_pany + m_pansy - m_paney, 0);
-	glScalef(1.0f/zN, 1.0/zN, 1);
 
-	if (showGrid())
-		drawGrid();
+	pan();
+	zoom();
+	drawGrid();
 	
 	glColor4f(1,0,0, 0.5);
 	glBegin(GL_POLYGON);
@@ -99,14 +147,12 @@ void SchematicRenderer::paintGL()
 	glVertex2f(500,100);
 	glEnd();
 
-#if 0
 	glColor4f(0,0,1, 0.5);
 	glBegin(GL_POLYGON);
 	glVertex2f(100,100);
 	glVertex2f(200,600);
 	glVertex2f(600,200);
 	glEnd();
-#endif
 }
 
 void SchematicRenderer::panStart(double x, double y)
@@ -133,6 +179,11 @@ void SchematicRenderer::panEnd(double x, double y)
 	m_pansy = 0;
 	m_panex = 0;
 	m_paney = 0;
+}
+
+void SchematicRenderer::pan()
+{
+	glTranslatef(m_panx + m_panex - m_pansx, m_pany + m_pansy - m_paney, 0);
 }
 
 void SchematicRenderer::mousePressEvent(QMouseEvent *event)
@@ -173,8 +224,22 @@ void SchematicRenderer::keyPressEvent(QKeyEvent* event)
 	}
 }
 
-void SchematicRenderer::zoom(int delta)
+void SchematicRenderer::zoom()
 {
+	double zN = sqrt(m_zoom);
+
+	printf("%lf %lf\n", m_zoomX, m_zoomY);
+	glTranslatef(m_zoomX, m_zoomY, 0);
+	glScalef(1.0f/zN, 1.0/zN, 1);
+	glTranslatef(-m_zoomX, -m_zoomY, 0);
+}
+
+void SchematicRenderer::setZoom(double x, double y, int delta)
+{
+	Position *p = getGLPos(x, y);
+	m_zoomX = p->m_x;
+	m_zoomY = p->m_y;
+	delete p;
 	if (delta < 0) {
 		m_zoom += m_zoomDist;
 	} else
@@ -184,7 +249,7 @@ void SchematicRenderer::zoom(int delta)
 
 void SchematicRenderer::wheelEvent(QWheelEvent *event)
 {
-	zoom(event->delta());
+	setZoom(event->x(), event->y(), event->delta());
 	updateGL();
 	event->accept();
 }
