@@ -11,5 +11,5 @@ LIBS+=../../libandromeda.a
 INCLUDEPATH+=../../include
 
 # Input
-HEADERS += SchematicWindow.h MainWindow.h
-SOURCES += main.cpp SchematicWindow.cpp MainWindow.cpp
+HEADERS += SchematicWindow.h MainWindow.h QtSchematicRenderer.h
+SOURCES += main.cpp SchematicWindow.cpp MainWindow.cpp QtSchematicRenderer.cpp

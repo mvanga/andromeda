@@ -3,9 +3,10 @@
 
 #include <cstdio>
 #include <cmath>
+#include <iostream>
 
-SchematicWindow::SchematicWindow(QWidget *parent, Schematic *p_sch) :
-	QGLWidget(parent), m_sch(p_sch)
+SchematicWindow::SchematicWindow(QWidget *parent, Schematic *p_sch, QtSchematicRenderer *r) :
+	QGLWidget(parent), m_sch(p_sch), m_renderer(r)
 {
 	setMouseTracking(true);
 	m_gridWidth = 5;
@@ -133,8 +134,9 @@ void SchematicWindow::paintGL()
 	drawGrid();
 	drawOrigin();
 
-	/* renderSchematic() */
+	renderSchematic();
 	
+#if 0
 	glColor4f(1,0,0, 0.5);
 	glBegin(GL_POLYGON);
 	glVertex2f(0,0);
@@ -148,6 +150,7 @@ void SchematicWindow::paintGL()
 	glVertex2f(100,600);
 	glVertex2f(600,100);
 	glEnd();
+#endif
 }
 
 void SchematicWindow::mousePressEvent(QMouseEvent *event)
@@ -271,4 +274,19 @@ void SchematicWindow::getGLPos(double x, double y, double *ox, double *oy)
 
 void SchematicWindow::renderSchematic()
 {
+	std::vector<SchematicElement *> elements = m_sch->getElements();
+	int i;
+	
+	for (i = 0; i < elements.size(); i++) {
+		switch (elements[i]->getSchematicElementType()) {
+		case SE_NET_ENDPOINT: {
+		}
+		case SE_NET_SEGMENT: {
+		}
+		case SE_NET: {
+			SENet *net = static_cast<SENet*>(elements[i]);
+			m_renderer->renderNet(net);
+		}
+		}
+	}
 }

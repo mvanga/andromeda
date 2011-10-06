@@ -6,16 +6,21 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
+	QtSchematicRenderer *renderer = new QtSchematicRenderer();
 	Schematic *sch = new Schematic();
 
-	SENetEndpoint *a = new SENetEndpoint(0, 10, 10);
-	SENetEndpoint *b = new SENetEndpoint(0, 20, 20);
-	SENetSegment *seg = new SENetSegment(0, a, b, 0);
-	SENet *net = new SENet(0, seg);
+	Layer *l = new Layer(0, "SCH_NETS");
+	l->setNetColor(0x000000);
+	l->setNetWidth(2);
+
+	SENetEndpoint *a = new SENetEndpoint(l, 10, 10);
+	SENetEndpoint *b = new SENetEndpoint(l, 20, 20);
+	SENetSegment *seg = new SENetSegment(l, a, b, 0);
+	SENet *net = new SENet(l, seg);
 
 	sch->addElement(net);
 
-	schem = new SchematicWindow(this, sch);
+	schem = new SchematicWindow(this, sch, renderer);
 	schem->setCursor(Qt::CrossCursor);
 	setCentralWidget(schem);
 

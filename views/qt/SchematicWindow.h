@@ -5,13 +5,15 @@
 
 #include <qt4/QtOpenGL/QGLWidget>
 
+#include "QtSchematicRenderer.h"
+
 #define SCH_RENDER_SHOWGRID	(1<<0)
 
 class SchematicWindow: public QGLWidget {
 	Q_OBJECT;
 
 public:
-	SchematicWindow(QWidget *, Schematic *sch);
+	SchematicWindow(QWidget *, Schematic *sch, QtSchematicRenderer *r);
 
 	void setGrid(bool);
 	void setZoom(double, double, int);
@@ -71,6 +73,8 @@ private:
 
 	/* Flags */
 	unsigned int m_flags;
+
+	QtSchematicRenderer *m_renderer;
 };
 
 #endif

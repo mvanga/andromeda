@@ -26,9 +26,9 @@ public:
 /* Schematic Element class for all elements related to schematics */
 
 enum SchematicElementType {
-	SE_WIRE_ENDPOINT,
-	SE_WIRE_SEGMENT,
-	SE_WIRE,
+	SE_NET_ENDPOINT,
+	SE_NET_SEGMENT,
+	SE_NET,
 };
 
 class SchematicElement : public Element {
@@ -48,7 +48,7 @@ class SENetEndpoint : public SchematicElement {
 	int m_y;
 public:
 	SENetEndpoint(Layer *p_layer, int p_x, int p_y) :
-		SchematicElement(p_layer, SE_WIRE_ENDPOINT), m_x(p_x), m_y(p_y) {}
+		SchematicElement(p_layer, SE_NET_ENDPOINT), m_x(p_x), m_y(p_y) {}
 	int getX() { return m_x; }
 	int getY() { return m_y; }
 	bool operator==(const SENetEndpoint& other) const {
@@ -66,7 +66,7 @@ class SENetSegment : public SchematicElement {
 	unsigned long m_color;
 public:
 	SENetSegment(Layer *p_layer, SENetEndpoint *p_start, SENetEndpoint *p_end, unsigned long p_color) :
-		SchematicElement(p_layer, SE_WIRE_SEGMENT), m_start(p_start), m_end(p_end), m_color(p_color) {}
+		SchematicElement(p_layer, SE_NET_SEGMENT), m_start(p_start), m_end(p_end), m_color(p_color) {}
 	
 	SENetEndpoint *getStart() { return m_start; }
 	SENetEndpoint *getEnd() { return m_end; }
@@ -81,14 +81,14 @@ class SENet : public SchematicElement {
 	std::vector<SENetSegment *> m_segments;
 public:
 	SENet(Layer *p_layer, SENetSegment *p_segment) :
-		SchematicElement(p_layer, SE_WIRE)
+		SchematicElement(p_layer, SE_NET)
 	{
 		m_segments.push_back(p_segment);
 	}
 	SENet(Layer *p_layer, std::vector<SENetSegment *> p_segments) :
-		SchematicElement(p_layer, SE_WIRE), m_segments(p_segments) {}
+		SchematicElement(p_layer, SE_NET), m_segments(p_segments) {}
 	
-	std::vector<SENetSegment *>& getSegments() { return m_segments; }
+	std::vector<SENetSegment *> *getSegments() { return &m_segments; }
 	void addSegment(SENetSegment *segment) { m_segments.push_back(segment); }
 };
 
