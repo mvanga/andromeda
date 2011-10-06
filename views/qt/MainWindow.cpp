@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 	sch->addElement(net);
 
-	schem = new SchematicRenderer(this, sch);
+	schem = new SchematicWindow(this, sch);
 	schem->setCursor(Qt::CrossCursor);
 	setCentralWidget(schem);
 

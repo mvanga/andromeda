@@ -7,46 +7,46 @@
 
 #define SCH_RENDER_SHOWGRID	(1<<0)
 
-class Position {
-public:
-	float m_x;
-	float m_y;
-	float m_z;
-	Position(float x, float y, float z) : m_x(x), m_y(y), m_z(z) {}
-	Position(Position& p) { m_x = p.m_x; m_y = p.m_y; m_z = p.m_z; }
-	void operator=(Position& p) { m_x = p.m_x; m_y = p.m_y; m_z = p.m_z; }
-};
-
-class SchematicRenderer: public QGLWidget {
+class SchematicWindow: public QGLWidget {
 	Q_OBJECT;
 
 public:
-	SchematicRenderer(QWidget *, Schematic *sch);
+	SchematicWindow(QWidget *, Schematic *sch);
 
 	void setGrid(bool);
 	void setZoom(double, double, int);
 protected:
+	/* QGLWidget related */
 	void initializeGL();
 	void resizeGL(int w, int h);
 	void paintGL();
+
+	/* Event Handlers*/
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 	void keyPressEvent(QKeyEvent *event);
 	void wheelEvent(QWheelEvent *event);
 
+	/* Grid management */
 	bool showGrid();
-
 	void drawGrid();
+	void drawOrigin();
 
+	/* Zooming */
 	void zoom();
-	void pan();
 
+	/* Panning */
 	void panStart(double x, double y);
 	void panMove(double x, double y);
 	void panEnd(double x, double y);
+	void pan();
 
-	Position *getGLPos(int x, int y);
+	/* Coordinate conversion (Qt -> OpenGL) */
+	void getGLPos(double, double, double *, double *);
+
+	/* Schematic rendering */
+	void renderSchematic();
 private:
 	Schematic *m_sch;
 	int m_gridWidth;
