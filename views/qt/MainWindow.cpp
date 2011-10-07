@@ -1,24 +1,22 @@
 #include "MainWindow.h"
+#include "SchematicWindow.h"
 
-#include <qt4/QtGui/QVBoxLayout>
+#include <qt4/QtGui/QLabel>
+#include <qt4/QtGui/QToolButton>
+#include <qt4/QtGui/QAction>
 
 #include <andromeda/elements.h>
+
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
 	QtSchematicRenderer *renderer = new QtSchematicRenderer();
 	Schematic *sch = new Schematic();
 
-	Layer *l = new Layer(0, "SCH_NETS");
-	l->setNetColor(0x000000);
-	l->setNetWidth(2);
-
-	SENetEndpoint *a = new SENetEndpoint(l, 10, 10);
-	SENetEndpoint *b = new SENetEndpoint(l, 20, 20);
-	SENetSegment *seg = new SENetSegment(l, a, b, 0);
-	SENet *net = new SENet(l, seg);
-
-	sch->addElement(net);
+	m_clayer = new Layer(0, "SCH_NETS");
+	m_clayer->setNetColor(0x00ff00);
+	m_clayer->setNetWidth(1);
 
 	schem = new SchematicWindow(this, sch, renderer);
 	schem->setCursor(Qt::CrossCursor);
@@ -26,4 +24,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 	status = new QStatusBar(this);
 	setStatusBar(status);
+
+	QLabel *message = new QLabel("No Message");
+	status->addWidget(message);
+
+	QToolBar *tool = new QToolBar;
+	tool->setGeometry(0, 0, 200, 20);
+
+	drawNet = new QAction(QIcon("icons/draw_net.png"), "Net/Wire", this);
+	connect(drawNet, SIGNAL(triggered()), this, SLOT(netToolSelect()));
+	drawNet->setShortcut(QKeySequence(Qt::Key_P, Qt::Key_W));
+	tool->addAction(drawNet);
+
+	addToolBar(Qt::LeftToolBarArea, tool);
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+	std::cout << "mainwindow keypress\n" << std::flush;
+}
+
+void MainWindow::netToolSelect()
+{
+	schem->setTool(TOOL_NET, m_clayer);
 }

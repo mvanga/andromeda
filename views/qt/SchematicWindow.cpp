@@ -10,6 +10,7 @@ SchematicWindow::SchematicWindow(QWidget *parent, Schematic *p_sch, QtSchematicR
 {
 	setMouseTracking(true);
 	m_gridWidth = 5;
+	setFocus();
 
 	setGrid(true);
 
@@ -23,6 +24,8 @@ SchematicWindow::SchematicWindow(QWidget *parent, Schematic *p_sch, QtSchematicR
 
 	m_panx = 0;
 	m_pany = 0;
+
+	m_tool = TOOL_NONE;
 }
 
 void SchematicWindow::initializeGL()
@@ -33,7 +36,8 @@ void SchematicWindow::initializeGL()
 	glEnable(GL_BLEND);
 	glEnable(GL_POLYGON_SMOOTH);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glHint (GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+	glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
+	glHint (GL_POINT_SMOOTH_HINT, GL_NICEST);
 	glClearColor(255, 255, 255, 0);
 }
 
@@ -134,7 +138,10 @@ void SchematicWindow::paintGL()
 	drawGrid();
 	drawOrigin();
 
-	renderSchematic();
+	renderSchematic(m_sch);
+	renderSchematic(&m_bufsch);
+
+	setFocus();
 	
 #if 0
 	glColor4f(1,0,0, 0.5);
@@ -158,6 +165,16 @@ void SchematicWindow::mousePressEvent(QMouseEvent *event)
 	if (event->buttons() & Qt::MiddleButton) {
 		panStart(event->x(), event->y());
 	}
+	if (event->buttons() & Qt::LeftButton) {
+		double x, y;
+		getGLPos(event->x(), event->y(), &x, &y);
+		switch (m_tool) {
+		case TOOL_NET: {
+			SENetEndpoint *p = new SENetEndpoint(m_clayer, x, y);
+			m_tmpsch.addElement(p);
+		}
+		}
+	}
 	updateGL();
 }
 
@@ -165,6 +182,26 @@ void SchematicWindow::mouseReleaseEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::MiddleButton) {
 		panEnd(event->x(), event->y());
+	}
+	if (event->button() == Qt::LeftButton) {
+		double x, y;
+		getGLPos(event->x(), event->y(), &x, &y);
+		switch (m_tool) {
+		case TOOL_NET: {
+			SENetEndpoint *p = new SENetEndpoint(m_clayer, x, y);
+			SENetEndpoint *q = static_cast<SENetEndpoint*>(m_tmpsch.getElements().front());
+			SENetSegment *s = new SENetSegment(m_clayer, q, p);
+			SENet *n = new SENet(m_clayer, s);
+
+//			m_bufsch.addElement(n);
+			m_sch->addElement(n);
+
+			m_tmpsch.clear();
+			m_bufsch.clear();
+			
+			std::cout << "After line size: " << m_tmpsch.getElements().size() << ", " << m_bufsch.getElements().size() << "\n";
+		}
+		}
 	}
 	updateGL();
 }
@@ -175,6 +212,22 @@ void SchematicWindow::mouseMoveEvent(QMouseEvent *event)
 	getGLPos(event->x(), event->y(), &x, &y);
 	if (event->buttons() & Qt::MiddleButton) {
 		panMove(event->x(), event->y());
+	}
+	if (event->buttons() & Qt::LeftButton) {
+		double x, y;
+		getGLPos(event->x(), event->y(), &x, &y);
+		switch (m_tool) {
+		case TOOL_NET: {
+			SENetEndpoint *p = new SENetEndpoint(m_clayer, x, y);
+			SENetEndpoint *q = static_cast<SENetEndpoint*>(m_tmpsch.getElements().front());
+			SENetSegment *s = new SENetSegment(m_clayer, q, p);
+			SENet *n = new SENet(m_clayer, s);
+
+			m_bufsch.clear();
+			m_bufsch.addElement(n);
+			printf("Size after mouse move: %d\n", m_bufsch.getElements().size());
+		}
+		}
 	}
 	updateGL();
 }
@@ -189,13 +242,38 @@ void SchematicWindow::wheelEvent(QWheelEvent *event)
 void SchematicWindow::keyPressEvent(QKeyEvent* event)
 {
 	switch(event->key()) {
-	case Qt::Key_Escape:
-		close();
+	case Qt::Key_Equal:
+	case Qt::Key_Plus:
+		setZoom(m_width/2, m_height/2, 120);
+		break;
+	case Qt::Key_Minus:
+		setZoom(m_width/2, m_height/2, -120);
+		break;
+	case Qt::Key_Left:
+		panStart(m_width/2, m_height/2);
+		panMove(m_width/2 + 10, m_height/2);
+		panEnd(m_width/2 + 10, m_height/2);
+		break;
+	case Qt::Key_Right:
+		panStart(m_width/2, m_height/2);
+		panMove(m_width/2 - 10, m_height/2);
+		panEnd(m_width/2 - 10, m_height/2);
+		break;
+	case Qt::Key_Up:
+		panStart(m_width/2, m_height/2);
+		panMove(m_width/2, m_height/2 + 10);
+		panEnd(m_width/2, m_height/2 + 10);
+		break;
+	case Qt::Key_Down:
+		panStart(m_width/2, m_height/2);
+		panMove(m_width/2, m_height/2 - 10);
+		panEnd(m_width/2, m_height/2 - 10);
 		break;
 	default:
 		event->ignore();
 		break;
 	}
+	updateGL();
 }
 
 void SchematicWindow::panStart(double x, double y)
@@ -272,21 +350,30 @@ void SchematicWindow::getGLPos(double x, double y, double *ox, double *oy)
 	*oy = posY;
 }
 
-void SchematicWindow::renderSchematic()
+void SchematicWindow::renderSchematic(Schematic *sch)
 {
-	std::vector<SchematicElement *> elements = m_sch->getElements();
-	int i;
+	std::vector<SchematicElement *> elements = sch->getElements();
+	unsigned int i;
 	
 	for (i = 0; i < elements.size(); i++) {
 		switch (elements[i]->getSchematicElementType()) {
 		case SE_NET_ENDPOINT: {
+			std::cout << "Found endpoint\n";
 		}
 		case SE_NET_SEGMENT: {
+			std::cout << "Found net segment\n";
 		}
 		case SE_NET: {
+			std::cout << "Found net\n";
 			SENet *net = static_cast<SENet*>(elements[i]);
 			m_renderer->renderNet(net);
 		}
 		}
 	}
+}
+
+void SchematicWindow::setTool(unsigned int p_tool, Layer *layer)
+{
+	m_tool = p_tool;
+	m_clayer = layer;
 }

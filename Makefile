@@ -1,4 +1,4 @@
-CXXFLAGS+=-I./include
+CXXFLAGS+=-I./include -Wall -Wextra -ggdb
 
 SOURCES=schematic.o elements.o
 

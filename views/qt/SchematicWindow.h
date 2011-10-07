@@ -9,6 +9,11 @@
 
 #define SCH_RENDER_SHOWGRID	(1<<0)
 
+enum {
+	TOOL_NONE,
+	TOOL_NET,
+};
+
 class SchematicWindow: public QGLWidget {
 	Q_OBJECT;
 
@@ -17,6 +22,8 @@ public:
 
 	void setGrid(bool);
 	void setZoom(double, double, int);
+
+	void setTool(unsigned int, Layer *);
 protected:
 	/* QGLWidget related */
 	void initializeGL();
@@ -27,8 +34,8 @@ protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
-	void keyPressEvent(QKeyEvent *event);
 	void wheelEvent(QWheelEvent *event);
+	void keyPressEvent(QKeyEvent *event);
 
 	/* Grid management */
 	bool showGrid();
@@ -48,9 +55,15 @@ protected:
 	void getGLPos(double, double, double *, double *);
 
 	/* Schematic rendering */
-	void renderSchematic();
+	void renderSchematic(Schematic *);
 private:
+	/* The main schematic */
 	Schematic *m_sch;
+	/* The drawing buffer schematic */
+	Schematic m_bufsch;
+	/* Temp holder */
+	Schematic m_tmpsch;
+
 	int m_gridWidth;
 	int m_width;
 	int m_height;
@@ -75,6 +88,10 @@ private:
 	unsigned int m_flags;
 
 	QtSchematicRenderer *m_renderer;
+
+	unsigned int m_tool;
+
+	Layer *m_clayer;
 };
 
 #endif

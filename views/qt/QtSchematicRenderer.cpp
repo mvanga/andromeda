@@ -12,7 +12,7 @@ void QtSchematicRenderer::renderNetSegment(SENetSegment *nseg)
 	GLdouble oldWidth;
 	unsigned int col = nseg->getLayer()->getNetColor();
 	unsigned int w = nseg->getLayer()->getNetWidth();
-	glColor3f((col&0xff)/255, ((col>>8)&0xff)/255, ((col>>16)&0xff)/255);
+	glColor3f(((col>>16)&0xff)/255, ((col>>8)&0xff)/255, (col&0xff)/255);
 	glGetDoublev(GL_LINE_WIDTH, &oldWidth);
 	glLineWidth(w);
 	glBegin(GL_LINES);
@@ -27,6 +27,7 @@ void QtSchematicRenderer::renderNet(SENet *net)
 	unsigned int i;
 	std::vector<SENetSegment *> *segments = net->getSegments();
 
+	std::cout << "Size: " << segments->size() << "\n" << std::flush;
 	for (i = 0; i < segments->size(); i++)
 		renderNetSegment(segments->at(i));
 }
