@@ -27,7 +27,6 @@ void QtSchematicRenderer::renderNet(SENet *net)
 	unsigned int i;
 	std::vector<SENetSegment *> *segments = net->getSegments();
 
-	std::cout << "Size: " << segments->size() << "\n" << std::flush;
 	for (i = 0; i < segments->size(); i++)
 		renderNetSegment(segments->at(i));
 }

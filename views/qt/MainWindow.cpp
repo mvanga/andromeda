@@ -1,7 +1,6 @@
 #include "MainWindow.h"
 #include "SchematicWindow.h"
 
-#include <qt4/QtGui/QLabel>
 #include <qt4/QtGui/QToolButton>
 #include <qt4/QtGui/QAction>
 
@@ -25,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	status = new QStatusBar(this);
 	setStatusBar(status);
 
-	QLabel *message = new QLabel("No Message");
+	message = new QLabel("No Message");
 	status->addWidget(message);
 
 	QToolBar *tool = new QToolBar;
@@ -41,10 +40,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
+	event = 0;
 	std::cout << "mainwindow keypress\n" << std::flush;
 }
 
 void MainWindow::netToolSelect()
 {
+	message->setText("Net tool selected");
 	schem->setTool(TOOL_NET, m_clayer);
 }

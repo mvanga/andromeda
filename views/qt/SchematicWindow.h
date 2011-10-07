@@ -6,6 +6,7 @@
 #include <qt4/QtOpenGL/QGLWidget>
 
 #include "QtSchematicRenderer.h"
+#include "NetTool.h"
 
 #define SCH_RENDER_SHOWGRID	(1<<0)
 
@@ -36,6 +37,7 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 	void wheelEvent(QWheelEvent *event);
 	void keyPressEvent(QKeyEvent *event);
+	void mouseDoubleClickedEvent(QMouseEvent *event);
 
 	/* Grid management */
 	bool showGrid();
@@ -92,6 +94,8 @@ private:
 	unsigned int m_tool;
 
 	Layer *m_clayer;
+
+	NetTool *m_netTool;
 };
 
 #endif

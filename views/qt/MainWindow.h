@@ -6,6 +6,7 @@
 #include <qt4/QtGui/QStatusBar>
 #include <qt4/QtGui/QWidget>
 #include <qt4/QtGui/QMainWindow>
+#include <qt4/QtGui/QLabel>
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT
@@ -24,6 +25,7 @@ private:
 	SchematicWindow *schem;
 	/* The status bar */
 	QStatusBar *status;
+	QLabel *message;
 
 	/* Tools */
 	QAction *drawNet;	/* Net/Wire tool */
