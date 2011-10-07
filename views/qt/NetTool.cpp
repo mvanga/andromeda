@@ -46,6 +46,7 @@ void NetTool::mousePressed(double x, double y, QMouseEvent *e)
 
 void NetTool::mouseReleased(double x, double y, QMouseEvent *e)
 {
+	e = 0;
 	x = y = 0;
 }
 
@@ -61,11 +62,13 @@ void NetTool::mouseMoved(double x, double y, QMouseEvent *e)
 		m_bufsch->addElement(n);
 		m_bufsch->merge(&m_netsch);
 	}
+	e = 0;
 }
 
 void NetTool::mouseDoubleClicked(double x, double y, QMouseEvent *e)
 {
 	x = y = 0;
+	e = 0;
 }
 
 void NetTool::keyPressed(QKeyEvent *e)

@@ -12,7 +12,7 @@ SchematicWindow::SchematicWindow(QWidget *parent, Schematic *p_sch, QtSchematicR
 	m_gridWidth = 5;
 	setFocus();
 
-	setGrid(true);
+	setGrid(false);
 
 	m_zoom = 1;
 	m_zoomDist = 0.01;
@@ -291,6 +291,7 @@ void SchematicWindow::zoom()
 	double zN = sqrt(m_zoom);
 
 	glTranslatef(m_zoomX, m_zoomY, 0);
+//	gluOrtho2D(-m_width/2*m_zoom, -m_width/2*m_zoom, -m_height/2*m_zoom, -m_height/2*m_zoom); // set origin to center of screen
 	glScalef(1.0f/zN, 1.0/zN, 1);
 	glTranslatef(-m_zoomX, -m_zoomY, 0);
 }
