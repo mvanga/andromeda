@@ -14,12 +14,18 @@ int main(int argc, char *argv[])
 	LayerManager::init();
 	ObjectManager::init();
 
+	Layer *layer = LayerManager::instance()->createLayer(0, "NETS");
+	layer->setNetColor(0x00ff00);
+	layer->setNetWidth(1);
+
 	MainWindow window(0);
 	window.resize(800, 600);
 	window.showMaximized();
 
+	app.exec();
+
 	ObjectManager::destroy();
 	LayerManager::destroy();
 
-	return app.exec();
+	return 0;
 }

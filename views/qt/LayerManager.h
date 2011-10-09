@@ -3,6 +3,8 @@
 
 #include <andromeda/elements.h>
 
+#include <vector>
+
 /* All units are either mils or mm */
 class LayerManager {
 public:
@@ -24,7 +26,7 @@ public:
 
 	Layer *createLayer(int, std::string);
 	Layer *getLayer(int);
-	Layer *getLayer(std::string);
+	Layer *getLayerByName(std::string);
 private:
 	LayerManager();
 	~LayerManager();
@@ -33,7 +35,7 @@ private:
 
 	static LayerManager *m_instance;
 
-	static std::vector<Layer *> m_layers;
+	std::vector<Layer *> m_layers;
 };
 
 #endif

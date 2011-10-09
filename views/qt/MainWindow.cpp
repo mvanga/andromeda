@@ -15,9 +15,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	SchematicRenderer *renderer = new SchematicRenderer();
 	Schematic *sch = new Schematic();
 
+	#if 0
 	m_clayer = new Layer(0, "NETS");//LayerManager::instance()->createLayer(0, "NETS");
 	m_clayer->setNetColor(0x00ff00);
 	m_clayer->setNetWidth(1);
+	#endif
+
+	m_clayer = 0;
 
 	schem = new SchematicWindow(this, sch, renderer);
 	schem->setCursor(Qt::CrossCursor);

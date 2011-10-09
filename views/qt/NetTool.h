@@ -8,7 +8,7 @@
 class NetTool : public SchematicTool {
 public:
 	NetTool(Schematic *, Schematic *);
-	void selected(Layer *layer);
+	void selected(int layer);
 	void unselected();
 	void mousePressed(double x, double y, QMouseEvent *e);
 	void mouseReleased(double x, double y, QMouseEvent *e);
@@ -17,7 +17,7 @@ public:
 	void keyPressed(QKeyEvent *e);
 
 private:
-	Layer *m_layer;
+	int m_layer;
 	Schematic m_tmpsch;
 	Schematic m_netsch;
 	int m_state;

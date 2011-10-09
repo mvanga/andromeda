@@ -23,14 +23,14 @@ public:
 	}
 
 	/* Set the layer to use */
-	void setLayer(Layer *);
+	void setLayer(int);
 
-	/* Create a net endpoint */
-	SENetEndpoint *createNetEndpoint(Layer *, double, double);
+	/* Create a net endpoint*/
+	SENetEndpoint*createNetEndpoint(int, double, double);
 	/* Create a net segment */
-	SENetSegment *createNetSegment(Layer *, SENetEndpoint *, SENetEndpoint *);
+	SENetSegment *createNetSegment(int, SENetEndpoint*, SENetEndpoint*);
 	/* Create a net with up to 2 segments */
-	SENet *createNet(Layer *, SENetSegment *s1 = 0, SENetSegment *s2 = 0);
+	SENet *createNet(int, SENetSegment *s1 = 0, SENetSegment *s2 = 0);
 private:
 	ObjectManager();
 	~ObjectManager();

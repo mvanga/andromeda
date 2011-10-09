@@ -30,7 +30,7 @@ private:
 
 	/* Tools */
 	QAction *drawNet;	/* Net/Wire tool */
-	Layer *m_clayer;
+	int m_clayer;
 };
 
 #endif

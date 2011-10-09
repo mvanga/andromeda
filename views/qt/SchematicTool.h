@@ -8,7 +8,7 @@
 class SchematicTool {
 public:
 	SchematicTool(Schematic *p_sch, Schematic *p_buf) : m_sch(p_sch), m_bufsch(p_buf) {}
-	virtual void selected(Layer *) {}
+	virtual void selected(int) {}
 	virtual void unselected() {}
 	virtual void mousePressed(double, double, QMouseEvent *) {}
 	virtual void mouseReleased(double, double, QMouseEvent *) {}

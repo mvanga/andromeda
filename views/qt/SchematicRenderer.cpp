@@ -1,4 +1,6 @@
 #include "SchematicRenderer.h"
+#include "LayerManager.h"
+
 #include <QGLWidget>
 
 #include <iostream>
@@ -15,9 +17,13 @@ void SchematicRenderer::setGridWidth(double p_grid)
 void SchematicRenderer::renderNetSegment(SENetSegment *nseg)
 {
 	GLdouble oldWidth;
-	unsigned int col = nseg->getLayer()->getNetColor();
-	unsigned int w = nseg->getLayer()->getNetWidth();
+	Layer *layer;
+	unsigned int col, w;
 	double x1, y1, x2, y2;
+
+	layer = LayerManager::instance()->getLayer(nseg->getLayer());
+	col = layer->getNetColor();
+	w = layer->getNetWidth();
 	x1 = nseg->getStart()->getX() * m_grid;
 	y1 = nseg->getStart()->getY() * m_grid;
 	x2 = nseg->getEnd()->getX() * m_grid;

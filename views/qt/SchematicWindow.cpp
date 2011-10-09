@@ -386,7 +386,7 @@ void SchematicWindow::renderSchematic(Schematic *sch)
 	}
 }
 
-void SchematicWindow::setTool(unsigned int p_tool, Layer *layer = 0)
+void SchematicWindow::setTool(unsigned int p_tool, int layer = 0)
 {
 	m_tool = p_tool;
 	if (layer)

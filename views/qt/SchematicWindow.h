@@ -24,7 +24,7 @@ public:
 	void setGrid(bool);
 	void setZoom(double, double, int);
 
-	void setTool(unsigned int, Layer *);
+	void setTool(unsigned int, int); 
 protected:
 	/* QGLWidget related */
 	void initializeGL();
@@ -95,7 +95,7 @@ private:
 
 	unsigned int m_tool;
 
-	Layer *m_clayer;
+	int m_clayer;
 
 	NetTool *m_netTool;
 };

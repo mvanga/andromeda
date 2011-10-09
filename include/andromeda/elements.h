@@ -21,19 +21,19 @@ enum SchematicElementType {
 class Element {
 	static int currId;
 	int m_id;
-	Layer *m_layer;
+	int m_layer;
 	ElementType m_type;
 public:
-	Element(Layer *, ElementType);
-	Layer *getLayer();
-	void setLayer(Layer *);
+	Element(int, ElementType);
+	int getLayer();
+	void setLayer(int );
 	ElementType getElementType();
 };
 
 class SchematicElement : public Element {
 	SchematicElementType m_schType;
 public:
-	SchematicElement(Layer *, SchematicElementType);
+	SchematicElement(int, SchematicElementType);
 	SchematicElementType getSchematicElementType();
 };
 
@@ -44,7 +44,7 @@ class SENetEndpoint : public SchematicElement {
 	int m_x;
 	int m_y;
 public:
-	SENetEndpoint(Layer *, int, int);
+	SENetEndpoint(int, int, int);
 	int getX();
 	int getY();
 	bool operator==(const SENetEndpoint&) const;
@@ -56,23 +56,23 @@ class SENetSegment : public SchematicElement {
 	SENetEndpoint *m_start;
 	SENetEndpoint *m_end;
 public:
-	SENetSegment(Layer *, SENetEndpoint *, SENetEndpoint *);
+	SENetSegment(int, SENetEndpoint *, SENetEndpoint *);
 	SENetEndpoint *getStart();
 	SENetEndpoint *getEnd();
 	bool isEndpoint(SENetEndpoint *);
-	void setLayer(Layer *);
+	void setLayer(int );
 };
 
 /* Net consisting of multiple wire segments (eg. bent wire = 2 segments) */
 class SENet : public SchematicElement {
 	std::vector<SENetSegment *> m_segments;
 public:
-	SENet(Layer *);
-	SENet(Layer *, SENetSegment *);
-	SENet(Layer *, std::vector<SENetSegment *>);
+	SENet(int );
+	SENet(int, SENetSegment *);
+	SENet(int, std::vector<SENetSegment *>);
 	std::vector<SENetSegment *> *getSegments();
 	void addSegment(SENetSegment *segment);
-	void setLayer(Layer *);
+	void setLayer(int );
 };
 
 #endif

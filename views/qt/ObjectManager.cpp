@@ -1,4 +1,5 @@
 #include "ObjectManager.h"
+
 #include <iostream>
 
 ObjectManager *ObjectManager::m_instance = NULL;
@@ -18,12 +19,10 @@ ObjectManager::~ObjectManager()
 }
 
 /* Create a net endpoint */
-SENetEndpoint *ObjectManager::createNetEndpoint(Layer *p_layer, double x, double y)
+SENetEndpoint *ObjectManager::createNetEndpoint(int p_layer, double x, double y)
 {
 	SENetEndpoint *end;
 
-	if (!p_layer)
-		return NULL;
 	end = new SENetEndpoint(p_layer, x, y);
 	if (!end)
 		return NULL;
@@ -33,11 +32,11 @@ SENetEndpoint *ObjectManager::createNetEndpoint(Layer *p_layer, double x, double
 }
 
 /* Create a net segment */
-SENetSegment *ObjectManager::createNetSegment(Layer *p_layer, SENetEndpoint *s1, SENetEndpoint *s2)
+SENetSegment *ObjectManager::createNetSegment(int p_layer, SENetEndpoint *s1, SENetEndpoint *s2)
 {
 	SENetSegment *seg;
 
-	if (!s1 || !s2 || !p_layer)
+	if (!s1 || !s2)
 		return NULL;
 	seg = new SENetSegment(p_layer, s1, s2);
 	if (!seg)
@@ -48,12 +47,10 @@ SENetSegment *ObjectManager::createNetSegment(Layer *p_layer, SENetEndpoint *s1,
 }
 
 /* Create a net with up to 2 segments */
-SENet *ObjectManager::createNet(Layer *p_layer, SENetSegment *s1, SENetSegment *s2)
+SENet *ObjectManager::createNet(int p_layer, SENetSegment *s1, SENetSegment *s2)
 {
 	SENet *net;
 
-	if (!p_layer)
-		return NULL;
 	if (!s1) {
 		net = new SENet(p_layer);
 		if (!net)
