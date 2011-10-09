@@ -250,7 +250,7 @@ void SchematicWindow::keyPressEvent(QKeyEvent* event)
 		panEnd(m_width/2, m_height/2 - 10);
 		break;
 	case Qt::Key_Escape:
-		m_tool = TOOL_NONE;
+//		m_tool = TOOL_NONE;
 		break;
 	default:
 		event->ignore();
@@ -389,10 +389,9 @@ void SchematicWindow::renderSchematic(Schematic *sch)
 void SchematicWindow::setTool(unsigned int p_tool, int layer = 0)
 {
 	m_tool = p_tool;
-	if (layer)
-		m_clayer = layer;
+
 	switch (p_tool) {
 	case TOOL_NET:
-		m_netTool->selected(layer);
+		m_netTool->selected(LAYER_NETS);
 	}
 }

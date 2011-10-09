@@ -16,10 +16,14 @@ public:
 	void mouseDoubleClicked(double x, double y, QMouseEvent *e);
 	void keyPressed(QKeyEvent *e);
 
+	void startNet(int x, int y);
+	void drawNet(int x, int y, bool);
+	void endNet();
+
 private:
 	int m_layer;
-	Schematic m_tmpsch;
 	Schematic m_netsch;
+	SENetEndpoint *m_prev;
 	int m_state;
 };
 

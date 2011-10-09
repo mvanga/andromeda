@@ -10,6 +10,15 @@
 
 #define SCH_RENDER_SHOWGRID	(1<<0)
 
+#define LAYER_NETS	0
+#define LAYER_BUSES	1
+#define LAYER_PINS	2
+#define LAYER_SYMBOLS	3
+#define LAYER_NAMES	4
+#define LAYER_VALUES	5
+#define LAYER_INFO	6
+#define LAYER_GUIDE	7
+
 enum {
 	TOOL_NONE,
 	TOOL_NET,
