@@ -1,6 +1,6 @@
 CXXFLAGS+=-I./include -Wall -Wextra -ggdb
 
-SOURCES=schematic.o elements.o
+SOURCES=schematic.o elements.o layer.o
 
 all: libandromeda.so libandromeda.a
 
