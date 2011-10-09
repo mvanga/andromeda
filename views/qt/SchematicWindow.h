@@ -1,12 +1,12 @@
 #ifndef ANDROMEDA_QT_SCHEMATICRENDERER_H
 #define ANDROMEDA_QT_SCHEMATICRENDERER_H
 
+#include "SchematicRenderer.h"
+#include "NetTool.h"
+
 #include <andromeda/schematic.h>
 
-#include <qt4/QtOpenGL/QGLWidget>
-
-#include "QtSchematicRenderer.h"
-#include "NetTool.h"
+#include <QGLWidget>
 
 #define SCH_RENDER_SHOWGRID	(1<<0)
 
@@ -19,7 +19,7 @@ class SchematicWindow: public QGLWidget {
 	Q_OBJECT;
 
 public:
-	SchematicWindow(QWidget *, Schematic *sch, QtSchematicRenderer *r);
+	SchematicWindow(QWidget *, Schematic *sch, SchematicRenderer *r);
 
 	void setGrid(bool);
 	void setZoom(double, double, int);
@@ -55,6 +55,8 @@ protected:
 
 	/* Coordinate conversion (Qt -> OpenGL) */
 	void getGLPos(double, double, double *, double *);
+	void screenToWorld(double, double, int *, int *);
+	void worldToScreen(int, int, double *, double *);
 
 	/* Schematic rendering */
 	void renderSchematic(Schematic *);
@@ -89,7 +91,7 @@ private:
 	/* Flags */
 	unsigned int m_flags;
 
-	QtSchematicRenderer *m_renderer;
+	SchematicRenderer *m_renderer;
 
 	unsigned int m_tool;
 

@@ -3,11 +3,14 @@
 
 #include <andromeda/renderer.h>
 
-class QtSchematicRenderer : public SchematicRenderer {
+class SchematicRenderer : public Renderer {
 public:
 	void renderNetEndpoint(SENetEndpoint *);
 	void renderNetSegment(SENetSegment *);
 	void renderNet(SENet *);
+	void setGridWidth(double);
+private:
+	double m_grid;
 };
 
 #endif

@@ -2,11 +2,12 @@
 #define ANDORMEDA_QT_MAINWINDOW_H
 
 #include "SchematicWindow.h"
-#include <qt4/QtGui/QToolBar>
-#include <qt4/QtGui/QStatusBar>
-#include <qt4/QtGui/QWidget>
-#include <qt4/QtGui/QMainWindow>
-#include <qt4/QtGui/QLabel>
+
+#include <QToolBar>
+#include <QStatusBar>
+#include <QWidget>
+#include <QMainWindow>
+#include <QLabel>
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT

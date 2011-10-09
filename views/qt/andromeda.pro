@@ -8,8 +8,8 @@ DEPENDPATH += .
 INCLUDEPATH += .
 QT+=opengl
 LIBS+=../../libandromeda.a
-INCLUDEPATH+=../../include
+INCLUDEPATH+=../../include /usr/include/qt4/QtGui/ /usr/include/qt4/QtOpenGL/
 
 # Input
-HEADERS += SchematicWindow.h MainWindow.h QtSchematicRenderer.h SchematicTool.h NetTool.h
-SOURCES += main.cpp SchematicWindow.cpp MainWindow.cpp QtSchematicRenderer.cpp NetTool.cpp
+HEADERS += SchematicWindow.h MainWindow.h SchematicRenderer.h SchematicTool.h NetTool.h ObjectManager.h LayerManager.h
+SOURCES += main.cpp SchematicWindow.cpp MainWindow.cpp SchematicRenderer.cpp NetTool.cpp ObjectManager.cpp LayerManager.cpp

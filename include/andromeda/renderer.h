@@ -3,7 +3,7 @@
 
 #include <andromeda/elements.h>
 
-class SchematicRenderer {
+class Renderer {
 	virtual void renderNetEndpoint(SENetEndpoint *) {}
 	virtual void renderNetSegment(SENetSegment *) {}
 	virtual void renderNet(SENet *) {}

@@ -100,7 +100,7 @@ SENet::SENet(Layer *p_layer, SENetSegment *p_segment) :
 SENet::SENet(Layer *p_layer, std::vector<SENetSegment *> p_segments) :
 	SchematicElement(p_layer, SE_NET), m_segments(p_segments)
 {
-	int i;
+	unsigned int i;
 	for (i = 0; i < m_segments.size();i++)
 		m_segments[i]->setLayer(p_layer);
 }
@@ -117,7 +117,7 @@ void SENet::addSegment(SENetSegment *segment)
 
 void SENet::setLayer(Layer *p_layer)
 {
-	int i;
+	unsigned int i;
 	SchematicElement::setLayer(p_layer);
 	for (i = 0; i < m_segments.size();i++)
 		m_segments[i]->setLayer(p_layer);

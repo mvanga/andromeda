@@ -1,15 +1,16 @@
-#include <QMouseEvent>
 #include "SchematicWindow.h"
+
+#include <QMouseEvent>
 
 #include <cstdio>
 #include <cmath>
 #include <iostream>
 
-SchematicWindow::SchematicWindow(QWidget *parent, Schematic *p_sch, QtSchematicRenderer *r) :
+SchematicWindow::SchematicWindow(QWidget *parent, Schematic *p_sch, SchematicRenderer *r) :
 	QGLWidget(parent), m_sch(p_sch), m_renderer(r)
 {
 	setMouseTracking(true);
-	m_gridWidth = 5;
+	m_gridWidth = 10;
 	setFocus();
 
 	setGrid(false);
@@ -28,6 +29,8 @@ SchematicWindow::SchematicWindow(QWidget *parent, Schematic *p_sch, QtSchematicR
 	m_tool = TOOL_NONE;
 
 	m_netTool = new NetTool(m_sch, &m_bufsch);
+
+	m_renderer->setGridWidth(m_gridWidth);
 }
 
 void SchematicWindow::initializeGL()
@@ -151,8 +154,8 @@ void SchematicWindow::mousePressEvent(QMouseEvent *event)
 	if (event->buttons() & Qt::MiddleButton) {
 		panStart(event->x(), event->y());
 	}
-	double x, y;
-	getGLPos(event->x(), event->y(), &x, &y);
+	int x, y;
+	screenToWorld(event->x(), event->y(), &x, &y);
 	switch (m_tool) {
 	case TOOL_NET: {
 		m_netTool->mousePressed(x, y, event);
@@ -168,8 +171,8 @@ void SchematicWindow::mouseReleaseEvent(QMouseEvent *event)
 		panEnd(event->x(), event->y());
 	}
 	if (event->button() == Qt::LeftButton) {
-		double x, y;
-		getGLPos(event->x(), event->y(), &x, &y);
+		int x, y;
+		screenToWorld(event->x(), event->y(), &x, &y);
 		switch (m_tool) {
 		case TOOL_NET: {
 			m_netTool->mouseReleased(x, y, event);
@@ -181,8 +184,8 @@ void SchematicWindow::mouseReleaseEvent(QMouseEvent *event)
 
 void SchematicWindow::mouseMoveEvent(QMouseEvent *event)
 {
-	double x, y;
-	getGLPos(event->x(), event->y(), &x, &y);
+	int x, y;
+	screenToWorld(event->x(), event->y(), &x, &y);
 	if (event->buttons() & Qt::MiddleButton) {
 		panMove(event->x(), event->y());
 	}
@@ -196,8 +199,8 @@ void SchematicWindow::mouseMoveEvent(QMouseEvent *event)
 
 void SchematicWindow::mouseDoubleClickedEvent(QMouseEvent *event)
 {
-	double x, y;
-	getGLPos(event->x(), event->y(), &x, &y);
+	int x, y;
+	screenToWorld(event->x(), event->y(), &x, &y);
 	switch (m_tool) {
 	case TOOL_NET: {
 		m_netTool->mouseDoubleClicked(x, y, event);
@@ -215,6 +218,9 @@ void SchematicWindow::wheelEvent(QWheelEvent *event)
 
 void SchematicWindow::keyPressEvent(QKeyEvent* event)
 {
+	if (m_tool == TOOL_NET) {
+		m_netTool->keyPressed(event);
+	}
 	switch(event->key()) {
 	case Qt::Key_Equal:
 	case Qt::Key_Plus:
@@ -243,12 +249,12 @@ void SchematicWindow::keyPressEvent(QKeyEvent* event)
 		panMove(m_width/2, m_height/2 - 10);
 		panEnd(m_width/2, m_height/2 - 10);
 		break;
+	case Qt::Key_Escape:
+		m_tool = TOOL_NONE;
+		break;
 	default:
 		event->ignore();
 		break;
-	}
-	if (m_tool == TOOL_NET) {
-		m_netTool->keyPressed(event);
 	}
 	updateGL();
 }
@@ -306,6 +312,34 @@ void SchematicWindow::setZoom(double x, double y, int delta)
 			m_zoom -= m_zoomDist;
 }
 
+void SchematicWindow::screenToWorld(double x, double y, int *ox, int *oy)
+{
+	GLint viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+	GLfloat winX, winY, winZ;
+	GLdouble posX, posY, posZ;
+
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	glGetIntegerv(GL_VIEWPORT, viewport);
+
+	winX = (float)x;
+	winY = m_height - (float)y;
+	glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+
+	gluUnProject(winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
+
+	*ox = (int)(posX/m_gridWidth);
+	*oy = (int)(posY/m_gridWidth);
+}
+
+void SchematicWindow::worldToScreen(int x, int y, double *ox, double *oy)
+{
+	*ox = x * m_gridWidth;
+	*oy = y * m_gridWidth;
+}
+
 void SchematicWindow::getGLPos(double x, double y, double *ox, double *oy)
 {
 	GLint viewport[4];
@@ -336,21 +370,27 @@ void SchematicWindow::renderSchematic(Schematic *sch)
 	for (i = 0; i < elements.size(); i++) {
 		switch (elements[i]->getSchematicElementType()) {
 		case SE_NET_ENDPOINT: {
+			break;
 		}
 		case SE_NET_SEGMENT: {
+			break;
 		}
 		case SE_NET: {
 			SENet *net = static_cast<SENet*>(elements[i]);
 			m_renderer->renderNet(net);
+			break;
 		}
+		default:
+			break;
 		}
 	}
 }
 
-void SchematicWindow::setTool(unsigned int p_tool, Layer *layer)
+void SchematicWindow::setTool(unsigned int p_tool, Layer *layer = 0)
 {
 	m_tool = p_tool;
-	m_clayer = layer;
+	if (layer)
+		m_clayer = layer;
 	switch (p_tool) {
 	case TOOL_NET:
 		m_netTool->selected(layer);

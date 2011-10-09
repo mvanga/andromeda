@@ -1,21 +1,24 @@
 #include "MainWindow.h"
 #include "SchematicWindow.h"
-
-#include <qt4/QtGui/QToolButton>
-#include <qt4/QtGui/QAction>
+#include "ObjectManager.h"
+#include "LayerManager.h"
 
 #include <andromeda/elements.h>
+
+#include <QToolButton>
+#include <QAction>
 
 #include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-	QtSchematicRenderer *renderer = new QtSchematicRenderer();
+	SchematicRenderer *renderer = new SchematicRenderer();
 	Schematic *sch = new Schematic();
 
-	m_clayer = new Layer(0, "SCH_NETS");
+//	m_clayer = LayerManager::instance()->createLayer(0, "NETS");
+	m_clayer = new Layer(0, "NETS");
 	m_clayer->setNetColor(0x00ff00);
-	m_clayer->setNetWidth(1);
+	m_clayer->setNetWidth(2);
 
 	schem = new SchematicWindow(this, sch, renderer);
 	schem->setCursor(Qt::CrossCursor);
@@ -29,8 +32,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 	QToolBar *tool = new QToolBar;
 	tool->setGeometry(0, 0, 200, 20);
+	tool->setIconSize(QSize(20, 20));
 
-	drawNet = new QAction(QIcon("icons/draw_net.png"), "Net/Wire", this);
+	drawNet = new QAction(QIcon("icons/draw_net.png"), "Draw Net/Wire (pw)", this);
 	connect(drawNet, SIGNAL(triggered()), this, SLOT(netToolSelect()));
 	drawNet->setShortcut(QKeySequence(Qt::Key_P, Qt::Key_W));
 	tool->addAction(drawNet);
@@ -40,8 +44,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-	event = 0;
-	std::cout << "mainwindow keypress\n" << std::flush;
 }
 
 void MainWindow::netToolSelect()

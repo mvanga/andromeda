@@ -1,4 +1,6 @@
 #include "NetTool.h"
+#include "LayerManager.h"
+#include "ObjectManager.h"
 
 #include <iostream>
 
@@ -20,15 +22,15 @@ void NetTool::unselected()
 void NetTool::mousePressed(double x, double y, QMouseEvent *e)
 {
 	if (m_state == 0 && (e->buttons() & Qt::LeftButton)) {
-		SENetEndpoint *p = new SENetEndpoint(m_layer, x, y);
+		SENetEndpoint *p = ObjectManager::instance()->createNetEndpoint(m_layer, x, y);
 		m_tmpsch.addElement(p);
 		m_state = 1;
 	} else if (m_state == 1) {
 		if (e->buttons() & Qt::LeftButton) {
-			SENetEndpoint *p = new SENetEndpoint(m_layer, x, y);
+			SENetEndpoint *p = ObjectManager::instance()->createNetEndpoint(m_layer, x, y);
 			SENetEndpoint *q = static_cast<SENetEndpoint*>(m_tmpsch.getElements().front());
-			SENetSegment *s = new SENetSegment(m_layer, q, p);
-			SENet *n = new SENet(m_layer, s);
+			SENetSegment *s = ObjectManager::instance()->createNetSegment(m_layer, q, p);
+			SENet *n = ObjectManager::instance()->createNet(m_layer, s);
 
 			m_bufsch->addElement(n);
 			m_tmpsch.clear();
@@ -53,10 +55,10 @@ void NetTool::mouseReleased(double x, double y, QMouseEvent *e)
 void NetTool::mouseMoved(double x, double y, QMouseEvent *e)
 {
 	if (m_state == 1) {
-		SENetEndpoint *p = new SENetEndpoint(m_layer, x, y);
+		SENetEndpoint *p = ObjectManager::instance()->createNetEndpoint(m_layer, x, y);
 		SENetEndpoint *q = static_cast<SENetEndpoint*>(m_tmpsch.getElements().front());
-		SENetSegment *s = new SENetSegment(m_layer, q, p);
-		SENet *n = new SENet(m_layer, s);
+		SENetSegment *s = ObjectManager::instance()->createNetSegment(m_layer, q, p);
+		SENet *n = ObjectManager::instance()->createNet(m_layer, s);
 
 		m_bufsch->clear();
 		m_bufsch->addElement(n);
@@ -79,6 +81,5 @@ void NetTool::keyPressed(QKeyEvent *e)
 		m_bufsch->clear();
 		m_tmpsch.clear();
 		m_state = 0;
-
 	}
 }
