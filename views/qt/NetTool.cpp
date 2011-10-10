@@ -29,19 +29,39 @@ void NetTool::startNet(int x, int y)
 
 void NetTool::drawNet(int x, int y, bool add)
 {
-	SENetEndpoint *p, *q;
-	SENetSegment *s;
+	SENetEndpoint *p, *q, *r;
+	SENetSegment *s1, *s2;
 	SENet *n;
+	int dx, dy;
+	int dxm, dym;
 
 	if (x == m_prev->getX() && y == m_prev->getY()) {
 		std::cout << "Zero length net ignored\n";
 		return;
 	}
 
-	p = ObjectManager::instance()->createNetEndpoint(m_layer, x, y);
-	q = static_cast<SENetEndpoint*>(m_prev);
-	s = ObjectManager::instance()->createNetSegment(m_layer, q, p);
-	n = ObjectManager::instance()->createNet(m_layer, s);
+	dx = x - m_prev->getX();
+	dy = y - m_prev->getY();
+	dxm = dx < 0 ? -dx : dx;
+	dym = dy < 0 ? -dy : dy;
+
+	if (!dx || !dy) {
+		p = ObjectManager::instance()->createNetEndpoint(m_layer, x, y);
+		q = static_cast<SENetEndpoint*>(m_prev);
+		s1 = ObjectManager::instance()->createNetSegment(m_layer, q, p);
+		n = ObjectManager::instance()->createNet(m_layer, s1);
+	} else {
+		p = ObjectManager::instance()->createNetEndpoint(m_layer, x, y);
+		if (dxm > dym)
+			q = ObjectManager::instance()->createNetEndpoint(m_layer, x - dx, y);
+		else
+			q = ObjectManager::instance()->createNetEndpoint(m_layer, x, y - dy);
+		r = static_cast<SENetEndpoint*>(m_prev);
+		s1 = ObjectManager::instance()->createNetSegment(m_layer, r, q);
+		s2 = ObjectManager::instance()->createNetSegment(m_layer, q, p);
+		n = ObjectManager::instance()->createNet(m_layer, s1);
+		n->addSegment(s2);
+	}
 
 	m_bufsch->clear();
 	if (add) {
