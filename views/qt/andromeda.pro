@@ -11,5 +11,5 @@ LIBS+=
 INCLUDEPATH+=../../include /usr/include/qt4/QtGui/ /usr/include/qt4/QtOpenGL/
 
 # Input
-HEADERS += SchematicWindow.h MainWindow.h SchematicRenderer.h SchematicTool.h NetTool.h ObjectManager.h LayerManager.h ConfigManager.h
-SOURCES += main.cpp SchematicWindow.cpp MainWindow.cpp SchematicRenderer.cpp NetTool.cpp ObjectManager.cpp LayerManager.cpp ../../schematic.cpp ../../layer.cpp ../../elements.cpp ConfigManager.cpp
+HEADERS += SchematicWindow.h MainWindow.h SchematicRenderer.h SchematicTool.h NetTool.h ObjectManager.h LayerManager.h
+SOURCES += main.cpp SchematicWindow.cpp MainWindow.cpp SchematicRenderer.cpp NetTool.cpp ObjectManager.cpp LayerManager.cpp ../../schematic.cpp ../../layer.cpp ../../elements.cpp

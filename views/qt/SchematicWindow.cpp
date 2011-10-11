@@ -10,7 +10,7 @@ SchematicWindow::SchematicWindow(QWidget *parent, Schematic *p_sch, SchematicRen
 	QGLWidget(parent), m_sch(p_sch), m_renderer(r)
 {
 	setMouseTracking(true);
-	m_gridWidth = 10;
+	m_gridWidth = 100;
 	setFocus();
 
 	setGrid(false);
@@ -51,7 +51,7 @@ void SchematicWindow::resizeGL(int w, int h)
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(-w/2, w/2, -h/2, h/2); // set origin to center of screen
+	gluOrtho2D(-w*10/2, w*10/2, -h*10/2, h*10/2); // set origin to center of screen
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	m_width = w;
@@ -75,10 +75,10 @@ void SchematicWindow::drawOrigin()
 {
 	glColor3f(0.4, 0.4, 0.4);
 	glBegin(GL_LINES);
-	glVertex2f(-10, 0);
-	glVertex2f(10, 0);
-	glVertex2f(0, 10);
-	glVertex2f(0, -10);
+	glVertex2f(-100, 0);
+	glVertex2f(100, 0);
+	glVertex2f(0, 100);
+	glVertex2f(0, -100);
 	glEnd();
 }
 
@@ -140,11 +140,13 @@ void SchematicWindow::paintGL()
 
 	pan();
 	zoom();
+
 	drawGrid();
-	drawOrigin();
 
 	renderSchematic(m_sch);
 	renderSchematic(&m_bufsch);
+
+	drawOrigin();
 
 	setFocus();
 }
@@ -367,6 +369,7 @@ void SchematicWindow::renderSchematic(Schematic *sch)
 	std::vector<SchematicElement *> elements = sch->getElements();
 	unsigned int i;
 	
+	m_renderer->setZoom(1.0/sqrt(m_zoom));
 	for (i = 0; i < elements.size(); i++) {
 		switch (elements[i]->getSchematicElementType()) {
 		case SE_NET_ENDPOINT: {

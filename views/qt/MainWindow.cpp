@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	tool->setGeometry(0, 0, 200, 20);
 	tool->setIconSize(QSize(20, 20));
 
-	drawNet = new QAction(QIcon("icons/draw_net.png"), "Draw Net/Wire (pw)", this);
+	drawNet = new QAction(QIcon("icons/draw_net.png"), "Place a Net/Wire (pw)", this);
 	connect(drawNet, SIGNAL(triggered()), this, SLOT(netToolSelect()));
 	drawNet->setShortcut(QKeySequence(Qt::Key_P, Qt::Key_W));
 	tool->addAction(drawNet);
