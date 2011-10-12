@@ -12,12 +12,12 @@ void initLayers()
 	Layer *layer;
 	
 	layer = LayerManager::instance()->createLayer(0, "NETS");
-	layer->setNetColor(0x00ff00);
-	layer->setNetWidth(1);
+	layer->setNetColor(0x008000);
+	layer->setNetWidth(2);
 
 	layer = LayerManager::instance()->createLayer(1, "BUSES");
 	layer->setNetColor(0x000080);
-	layer->setNetWidth(2);
+	layer->setNetWidth(3);
 
 	layer = LayerManager::instance()->createLayer(2, "PINS");
 	layer->setNetColor(0x000000);

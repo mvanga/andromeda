@@ -62,5 +62,6 @@ SENet *ObjectManager::createNet(int p_layer, SENetSegment *s1, SENetSegment *s2)
 		if (s2)
 			net->addSegment(s2);
 	}
+	m_sobj.push_back(net);
 	return net;
 }

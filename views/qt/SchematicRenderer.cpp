@@ -53,7 +53,7 @@ void SchematicRenderer::renderNetSegment(SENetSegment *nseg)
 	renderNetEndpoint(nseg->getEnd());
 #endif
 
-	glColor3f(((col>>16)&0xff)/255, ((col>>8)&0xff)/255, (col&0xff)/255);
+	glColor3f(((col>>16)&0xff)/(double)255, ((col>>8)&0xff)/(double)255, (col&0xff)/(double)255);
 	glGetDoublev(GL_LINE_WIDTH, &oldWidth);
 	glLineWidth(w*m_zoom);
 	glBegin(GL_LINES);
